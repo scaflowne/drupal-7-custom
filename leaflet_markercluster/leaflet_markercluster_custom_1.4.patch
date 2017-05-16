@@ -1,0 +1,49 @@
+diff --git a/leaflet_markercluster.drupal.js b/leaflet_markercluster.drupal.js
+index ba2c902..a2b380b 100644
+--- a/leaflet_markercluster.drupal.js
++++ b/leaflet_markercluster.drupal.js
+@@ -115,10 +115,14 @@
+           }
+         }
+ 
++        var Arrayfeature = {};
++
+         // add features
+         for (i = 0; i < this.features.length; i++) {
+           var feature = this.features[i];
+-         
++
++          Arrayfeature[feature.nid] = feature;
++
+           var cluster = (feature.type === 'point' || feature.type === 'json') &&
+             (!feature.flags || !(feature.flags & LEAFLET_MARKERCLUSTER_EXCLUDE_FROM_CLUSTER));
+ 
+@@ -138,6 +142,9 @@
+             for (var groupKey in feature.features) {
+               var groupFeature = feature.features[groupKey];
+               lFeature = leaflet_create_feature(groupFeature, lMap);
++
++              lFeature.options._nid = feature.nid;
++
+               lFeature.options.regions = feature.regions;
+               if (groupFeature.popup) {
+                 lFeature.bindPopup(groupFeature.popup);
+@@ -156,6 +163,9 @@
+           }
+           else {
+             lFeature = leaflet_create_feature(feature, lMap);
++
++            lFeature.options._nid = feature.nid;
++
+             // @RdB add to cluster layer if one is defined, else to map
+             if (cluster && clusterLayers[clusterGroup]) {
+               lFeature.options.regions = feature.regions;
+@@ -205,7 +215,7 @@
+         this.lMap = lMap;
+ 
+         // allow other modules to get access to the map object using jQuery's trigger method
+-        $(document).trigger('leaflet.map', [this.map, lMap]);
++        $(document).trigger('leaflet.map', [this.map, lMap, Arrayfeature ]);
+ 
+         // Destroy features so that an AJAX reload does not get parts of the old set.
+         // Required when the View has "Use AJAX" set to Yes.
