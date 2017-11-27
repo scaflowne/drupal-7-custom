@@ -1,0 +1,45 @@
+diff --git a/paragraphs.field_widget.inc b/paragraphs.field_widget.inc
+index 2aa1331..243ff8f 100644
+--- a/paragraphs.field_widget.inc
++++ b/paragraphs.field_widget.inc
+@@ -255,7 +255,13 @@ function paragraphs_field_multiple_value_form($field, $instance, $langcode, $ite
+ 
+             $select_list = array();
+             foreach ($select_bundles as $machine_name => $bundle) {
+-              $select_list[$machine_name] = $bundle['name'];
++              $select_list[$machine_name] = drupal_ucfirst(drupal_strtolower($bundle['name']));
++            }
++
++            $alphabetical_order = (isset($instance['settings']['alphabetical_order']) ? $instance['settings']['alphabetical_order'] : PARAGRAPHS_DEFAULT_ALPHABETICAL_ORDER);
++
++            if ($alphabetical_order) {
++              asort($select_list);
+             }
+ 
+             $field_elements['add_more']['type'] = array(
+diff --git a/paragraphs.module b/paragraphs.module
+index 4c1ce96..117c5ab 100644
+--- a/paragraphs.module
++++ b/paragraphs.module
+@@ -11,6 +11,7 @@ define('PARAGRAPHS_DEFAULT_TITLE_MULTIPLE', 'Paragraphs');
+ define('PARAGRAPHS_DEFAULT_EDIT_MODE', 'open');
+ define('PARAGRAPHS_DEFAULT_EDIT_MODE_OVERRIDE', 1);
+ define('PARAGRAPHS_DEFAULT_ADD_MODE', 'select');
++define('PARAGRAPHS_DEFAULT_ALPHABETICAL_ORDER', 0);
+ 
+ /**
+  * Modules should return this value from hook_paragraphs_item_access() to allow access to a paragraphs item.
+@@ -594,6 +595,13 @@ function paragraphs_field_instance_settings_form($field, $instance) {
+     '#required' => TRUE,
+   );
+ 
++  $element['alphabetical_order'] = array(
++    '#type' => 'checkbox',
++    '#title' => t('Show the options ordered alphabetically'),
++    '#description' => t('Set Alphabetical order from A-Z'),
++    '#default_value' => isset($settings['alphabetical_order']) ? $settings['alphabetical_order'] : PARAGRAPHS_DEFAULT_ALPHABETICAL_ORDER,
++  );
++
+   if (!count($bundles)) {
+     $element['allowed_bundles_explain'] = array(
+       '#type' => 'markup',
