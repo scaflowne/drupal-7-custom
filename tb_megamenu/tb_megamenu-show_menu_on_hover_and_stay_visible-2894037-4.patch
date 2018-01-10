@@ -1,0 +1,157 @@
+diff --git a/js/tb-megamenu-frontend.js b/js/tb-megamenu-frontend.js
+index 910914e..44aede0 100644
+--- a/js/tb-megamenu-frontend.js
++++ b/js/tb-megamenu-frontend.js
+@@ -89,6 +89,36 @@ Drupal.TBMegaMenu = Drupal.TBMegaMenu || {};
+           Drupal.TBMegaMenu.menuResponsive();
+         }
+       });
++
++      var $menuItem = null;
++      var megamenu = '.tb-megamenu';
++      if( $(megamenu).find('.after-hover-stay-visible').length ){
++        $(document).on('mouseenter', megamenu + ' .nav > li', function(){
++          var $this = $(this);
++          if( !$this.hasClass('open') ){
++             $(megamenu).find('.nav > li.open').removeClass('open');
++          }
++        });
++
++        $(megamenu).mouseleave(function(){
++          var obj = $(this);
++          if( obj.find('.nav > li.open').length ){
++            obj.addClass('open-menu');
++            $menuItem = obj.find('.nav > li.open');
++            clearTimeout ($menuItem.data('hoverTimeout'));
++            $menuItem.data('hoverTimeout',
++            setTimeout(function(){$menuItem.addClass ('open')}, 100));
++          }
++        });
++
++        $(document).on("mousedown",function(e){
++          var $info = $(megamenu);
++          if (!$info.is(e.target) && $info.has(e.target).length === 0) {
++            $info.find('.nav > li.open').removeClass('open');
++          }
++        });
++      }
++
+     },
+   }
+ })(jQuery);
+diff --git a/js/tb-megamenu-object.js b/js/tb-megamenu-object.js
+index 7f9d6e3..6d03257 100644
+--- a/js/tb-megamenu-object.js
++++ b/js/tb-megamenu-object.js
+@@ -161,6 +161,19 @@ Drupal.TBMegaMenu = Drupal.TBMegaMenu || {};
+     }
+   }
+ 
++  actions.toggleAfterHoverStayVisible = function() {
++    var toggle = $('.toolitem-after-hover-stay-visible');
++    toggle.find('label').removeClass('active btn-success btn-danger btn-primary');
++    if(parseInt(toggle.attr('data-after-hover-stay-visible'))) {
++      update_toggle (toggle, 0);
++      toggle.attr('data-after-hover-stay-visible', 0);
++    }
++    else {
++      update_toggle (toggle, 1);
++      toggle.attr('data-after-hover-stay-visible', 1);
++    }
++  }
++
+   actions.showBlockTitle = function() {
+     if (!currentSelected) return ;
+     var toggle = $('.toolcol-showblocktitle');
+diff --git a/tb_megamenu.themes.inc b/tb_megamenu.themes.inc
+index 2d9a65e..d29e79f 100644
+--- a/tb_megamenu.themes.inc
++++ b/tb_megamenu.themes.inc
+@@ -24,6 +24,12 @@ function template_preprocess_tb_megamenu(&$vars) {
+     ));
+     $vars['classes_array'][] = "style-" . $block_config['style'];
+   }
++
++  if ($vars['section'] == 'backend') {
++    drupal_add_js('/sites/all/libraries/colorpicker/js/colorpicker.js');
++    drupal_add_css('sites/all/libraries/colorpicker/css/colorpicker.css');
++  }
++
+   if ($block_config['animation'] != 'none') {
+     $vars['classes_array'][] = "animate";
+     $vars['classes_array'][] = $block_config['animation'];
+@@ -310,7 +316,7 @@ function template_preprocess_tb_megamenu_block(&$vars) {
+     }
+     elseif ($block_content) {
+       $block->subject = '';
+-      $is_enabled_i18n_block = isset($block->i18n_mode) && $block->i18n_mode;
++      $is_enabled_i18n_block = module_enable(array('i18n_block'));
+       // Translate content in block. And content must be a string.
+       if ($is_enabled_i18n_block && !is_array($block_content['content'])) {
+         $block->content = &$block_content['content'];
+diff --git a/templates/backend/tb-megamenu-backend.tpl.php b/templates/backend/tb-megamenu-backend.tpl.php
+index 81bd545..c2948c6 100644
+--- a/templates/backend/tb-megamenu-backend.tpl.php
++++ b/templates/backend/tb-megamenu-backend.tpl.php
+@@ -62,6 +62,39 @@
+                 <label for="toggleAlwayShowSubmenu1" class="btn <?php print $block_config['always-show-submenu'] ? 'active btn-success' : '';?>" title="<?php print t('Show submenus when browsing on small screens');?>">Yes</label>
+               </fieldset>
+             </li>
++            <li>
++              <label class="hasTip" title="<?php print t('The menu remains visible on hover and will disappear when user clicks');?>"><?php print t('Show menu on hover and stay visible') ?></label>
++              <fieldset class="radio btn-group toolitem-after-hover-stay-visible" data-after-hover-stay-visible="<?php print $block_config['after-hover-stay-visible'];?>">
++                <input type="radio" <?php print $block_config['after-hover-stay-visible'] ? '' : 'checked="checked"';?> value="0" name="tb-megamenu-after-hover-stay-visible" data-action="toggleAfterHoverStayVisible" class="toolbox-toggle" id="toggleAfterHoverStayVisible0">
++                <label for="toggleAfterHoverStayVisible0" class="btn <?php print $block_config['after-hover-stay-visible'] ? '' : 'active btn-danger';?>" title="<?php print t('Show menu on hover and close it after not hovering it');?>">No</label>
++                <input type="radio" <?php print $block_config['after-hover-stay-visible'] ? 'checked="checked"' : '';?> value="1" name="tb-megamenu-after-hover-stay-visible" data-action="toggleAfterHoverStayVisible" class="toolbox-toggle" id="toggleAfterHoverStayVisible1">
++                <label for="toggleAfterHoverStayVisible1" class="btn <?php print $block_config['after-hover-stay-visible'] ? 'active btn-success' : '';?>" title="<?php print t('Show menu on hover and not close it untill click out of it');?>">Yes</label>
++              </fieldset>
++            </li>
++            <li>
++              <label class="hasTip" title="<?php print t('This is used to define the megamenu bottom border');?>"><?php print t('Select the megamenu bottom border. Default: orange') ?></label>
++              <input type="text" maxlength="6" size="6" id="bottom-border-selector" name="bottom-border-selector" value="<?php print $block_config['bottom-border-selector']; ?>" />
++
++                <script>
++                $(document).ready(function() {
++                  $('#bottom-border-selector').ColorPicker({
++                    onSubmit: function(hsb, hex, rgb, el) {
++                      $(el).val(hex);
++                      $(el).ColorPickerHide();
++                    },
++                    onBeforeShow: function () {
++                      $(this).ColorPickerSetColor(this.value);
++                    },
++                    onChange: function (hsb, hex, rgb) {
++                      $('#bottom-border-selector').val(hex);
++                    }
++                  })
++                  .bind('keyup', function(){
++                    $(this).ColorPickerSetColor(this.value);
++                  });
++                });
++              </script>
++            </li>
+           </ul>
+         </div>
+         <?php print $item_toolbox;?>
+diff --git a/templates/tb-megamenu.tpl.php b/templates/tb-megamenu.tpl.php
+index c529cca..b3ff716 100644
+--- a/templates/tb-megamenu.tpl.php
++++ b/templates/tb-megamenu.tpl.php
+@@ -1,9 +1,16 @@
++<?php if ($block_config['bottom-border-selector'] != '') : ?>
++<style type="text/css">
++.tb-megamenu .dropdown-menu {
++    border-bottom: 3px solid #<?php echo $block_config['bottom-border-selector']; ?>;
++}
++</style>
++<?php endif; ?>
+ <div <?php print $attributes;?> class="<?php print $classes;?>">
+   <?php if($section == 'frontend') :?>
+     <button data-target=".nav-collapse" data-toggle="collapse" class="btn btn-navbar tb-megamenu-button" type="button">
+       <i class="fa fa-reorder"></i>
+     </button>
+-    <div class="nav-collapse <?php print $block_config['always-show-submenu'] ? ' always-show' : '';?>">
++    <div class="nav-collapse<?php print $block_config['always-show-submenu'] ? ' always-show' : '';?><?php print $block_config['after-hover-stay-visible'] ? ' after-hover-stay-visible' : '';?>">
+   <?php endif;?>
+   <?php print $content;?>
+   <?php if($section == 'frontend') :?>
