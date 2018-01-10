@@ -64,7 +64,7 @@ index 7f9d6e3..6d03257 100644
      if (!currentSelected) return ;
      var toggle = $('.toolcol-showblocktitle');
 diff --git a/tb_megamenu.themes.inc b/tb_megamenu.themes.inc
-index 2d9a65e..d29e79f 100644
+index 2d9a65e..d335af6 100644
 --- a/tb_megamenu.themes.inc
 +++ b/tb_megamenu.themes.inc
 @@ -24,6 +24,12 @@ function template_preprocess_tb_megamenu(&$vars) {
@@ -80,15 +80,6 @@ index 2d9a65e..d29e79f 100644
    if ($block_config['animation'] != 'none') {
      $vars['classes_array'][] = "animate";
      $vars['classes_array'][] = $block_config['animation'];
-@@ -310,7 +316,7 @@ function template_preprocess_tb_megamenu_block(&$vars) {
-     }
-     elseif ($block_content) {
-       $block->subject = '';
--      $is_enabled_i18n_block = isset($block->i18n_mode) && $block->i18n_mode;
-+      $is_enabled_i18n_block = module_enable(array('i18n_block'));
-       // Translate content in block. And content must be a string.
-       if ($is_enabled_i18n_block && !is_array($block_content['content'])) {
-         $block->content = &$block_content['content'];
 diff --git a/templates/backend/tb-megamenu-backend.tpl.php b/templates/backend/tb-megamenu-backend.tpl.php
 index 81bd545..c2948c6 100644
 --- a/templates/backend/tb-megamenu-backend.tpl.php
