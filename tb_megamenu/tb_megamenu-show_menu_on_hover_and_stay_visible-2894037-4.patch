@@ -40,7 +40,7 @@ index 910914e..44aede0 100644
    }
  })(jQuery);
 diff --git a/js/tb-megamenu-object.js b/js/tb-megamenu-object.js
-index 7f9d6e3..6d03257 100644
+index 7f9d6e3..ebd5f71 100644
 --- a/js/tb-megamenu-object.js
 +++ b/js/tb-megamenu-object.js
 @@ -161,6 +161,19 @@ Drupal.TBMegaMenu = Drupal.TBMegaMenu || {};
@@ -63,6 +63,15 @@ index 7f9d6e3..6d03257 100644
    actions.showBlockTitle = function() {
      if (!currentSelected) return ;
      var toggle = $('.toolcol-showblocktitle');
+@@ -522,6 +535,8 @@ Drupal.TBMegaMenu = Drupal.TBMegaMenu || {};
+     block_config['style'] = $('select[name="tb-megamenu-style"]').val();
+     block_config['auto-arrow'] = $('#tb-megamenu-admin-mm-intro .toolitem-auto-arrow').attr('data-auto-arrow');
+     block_config['always-show-submenu'] = $('#tb-megamenu-admin-mm-intro .toolitem-always-show-submenu').attr('data-always-show-submenu');
++    block_config['after-hover-stay-visible'] = $('#tb-megamenu-admin-mm-intro .toolitem-after-hover-stay-visible').attr('data-after-hover-stay-visible');
++    block_config['bottom-border-selector'] = $('#bottom-border-selector').val();
+     $('#tb-megamenu-admin-mm-tb #toolbox-message').html("").hide();
+     $('#tb-megamenu-admin-mm-tb #toolbox-loading').show();
+     $.ajax({
 diff --git a/tb_megamenu.themes.inc b/tb_megamenu.themes.inc
 index 2d9a65e..d335af6 100644
 --- a/tb_megamenu.themes.inc
