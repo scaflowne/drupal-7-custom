@@ -73,17 +73,18 @@ index 7f9d6e3..ebd5f71 100644
      $('#tb-megamenu-admin-mm-tb #toolbox-loading').show();
      $.ajax({
 diff --git a/tb_megamenu.themes.inc b/tb_megamenu.themes.inc
-index 2d9a65e..d335af6 100644
+index 2d9a65e..de3270d 100644
 --- a/tb_megamenu.themes.inc
 +++ b/tb_megamenu.themes.inc
-@@ -24,6 +24,12 @@ function template_preprocess_tb_megamenu(&$vars) {
+@@ -24,6 +24,13 @@ function template_preprocess_tb_megamenu(&$vars) {
      ));
      $vars['classes_array'][] = "style-" . $block_config['style'];
    }
 +
 +  if ($vars['section'] == 'backend') {
-+    drupal_add_js('/sites/all/libraries/colorpicker/js/colorpicker.js');
-+    drupal_add_css('sites/all/libraries/colorpicker/css/colorpicker.css');
++    $libraries = libraries_get_path('colorpicker');
++    drupal_add_js($libraries . '/js/colorpicker.js');
++    drupal_add_css($libraries . '/css/colorpicker.css');
 +  }
 +
    if ($block_config['animation'] != 'none') {
