@@ -1,0 +1,15 @@
+diff --git a/sites/all/modules/contrib/feeds_fetcher_archive/plugins/FeedsArchiveFileFetcher.inc b/sites/all/modules/contrib/feeds_fetcher_archive/plugins/FeedsArchiveFileFetcher.inc
+index 564cc5435..8c1e9d39e 100644
+--- a/sites/all/modules/contrib/feeds_fetcher_archive/plugins/FeedsArchiveFileFetcher.inc
++++ b/sites/all/modules/contrib/feeds_fetcher_archive/plugins/FeedsArchiveFileFetcher.inc
+@@ -135,7 +135,9 @@ class FeedsArchiveFileFetcher extends FeedsFileFetcher {
+   public function sourceForm($source_config) {
+     $form = parent::sourceForm($source_config);
+     $message = t('Allowed archive file extensions: @exts.', array('@exts' => $this->config['allowed_extensions']));
+-    $form['upload']['#description'] .= ' ' . $message;
++    if (!empty($form['upload']['#description'])) {
++      $form['upload']['#description'] .= ' ' . $message;
++    }
+     if (!empty($this->config['direct']) && !empty($form['source']['#description'])) {
+       $form['source']['#description'] .= ' ' . $message;
+     }
